@@ -8,11 +8,6 @@
   *afterattack. The return value does not matter.
   */
 /obj/item/proc/melee_attack_chain(mob/user, atom/target, params, attackchain_flags, damage_multiplier = 1)
-	if(isliving(user))
-		var/mob/living/L = user
-		if(!CHECK_MOBILITY(L, MOBILITY_USE) && !(attackchain_flags & ATTACK_IS_PARRY_COUNTERATTACK))
-			to_chat(L, "<span class='warning'>You are unable to swing [src] right now!</span>")
-			return
 	. = attackchain_flags
 	if(tool_behaviour && ((. = target.tool_act(user, src, tool_behaviour)) & STOP_ATTACK_PROC_CHAIN))
 		return
@@ -81,6 +76,9 @@
 		return
 	SEND_SIGNAL(user, COMSIG_MOB_ITEM_ATTACK, M, user)
 	if(item_flags & NOBLUDGEON)
+		return
+	if(!CHECK_MOBILITY(user, MOBILITY_USE) && !(attackchain_flags & ATTACK_IS_PARRY_COUNTERATTACK))
+		to_chat(user, "<span class='warning'>You are unable to swing [src] right now!</span>")
 		return
 	if(force && damtype != STAMINA && HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, "<span class='warning'>You don't want to harm other living beings!</span>")
