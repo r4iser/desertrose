@@ -291,19 +291,19 @@
 /datum/status_effect/blooddrunk/on_apply()
 	. = ..()
 	if(.)
-		owner.maxHealth *= 10
-		owner.bruteloss *= 10
-		owner.fireloss *= 10
+		owner.maxHealth *= 5
+		owner.bruteloss *= 5
+		owner.fireloss *= 5
 		if(iscarbon(owner))
 			var/mob/living/carbon/C = owner
 			for(var/X in C.bodyparts)
 				var/obj/item/bodypart/BP = X
-				BP.max_damage *= 10
-				BP.brute_dam *= 10
-				BP.burn_dam *= 10
-		owner.toxloss *= 10
-		owner.oxyloss *= 10
-		owner.cloneloss *= 10
+				BP.max_damage *= 5
+				BP.brute_dam *= 5
+				BP.burn_dam *= 5
+		owner.toxloss *= 5
+		owner.oxyloss *= 5
+		owner.cloneloss *= 5
 		owner.staminaloss += -10 // CIT CHANGE - makes blooddrunk status effect not exhaust you
 		owner.updatehealth()
 		last_health = owner.health
@@ -315,6 +315,7 @@
 		last_staminaloss = owner.getStaminaLoss()
 		owner.log_message("gained blood-drunk stun immunity", LOG_ATTACK)
 		owner.add_stun_absorption("blooddrunk", INFINITY, 4)
+		owner.add_movespeed_mod_immunities(type, list(/datum/movespeed_modifier/damage_slowdown, /datum/movespeed_modifier/damage_slowdown_flying, /datum/movespeed_modifier/monkey_health_speedmod))
 		owner.playsound_local(get_turf(owner), 'sound/effects/singlebeat.ogg', 40, 1)
 
 /datum/status_effect/blooddrunk/tick() //multiply the effect of healing by 10
@@ -322,7 +323,7 @@
 		var/needs_health_update = FALSE
 		var/new_bruteloss = owner.getBruteLoss()
 		if(new_bruteloss < last_bruteloss)
-			var/heal_amount = (new_bruteloss - last_bruteloss) * 10
+			var/heal_amount = (new_bruteloss - last_bruteloss) * 5
 			owner.adjustBruteLoss(heal_amount, updating_health = FALSE)
 			new_bruteloss = owner.getBruteLoss()
 			needs_health_update = TRUE
@@ -330,7 +331,7 @@
 
 		var/new_fireloss = owner.getFireLoss()
 		if(new_fireloss < last_fireloss)
-			var/heal_amount = (new_fireloss - last_fireloss) * 10
+			var/heal_amount = (new_fireloss - last_fireloss) * 5
 			owner.adjustFireLoss(heal_amount, updating_health = FALSE)
 			new_fireloss = owner.getFireLoss()
 			needs_health_update = TRUE
@@ -338,7 +339,7 @@
 
 		var/new_toxloss = owner.getToxLoss()
 		if(new_toxloss < last_toxloss)
-			var/heal_amount = (new_toxloss - last_toxloss) * 10
+			var/heal_amount = (new_toxloss - last_toxloss) * 5
 			owner.adjustToxLoss(heal_amount, updating_health = FALSE)
 			new_toxloss = owner.getToxLoss()
 			needs_health_update = TRUE
@@ -346,7 +347,7 @@
 
 		var/new_oxyloss = owner.getOxyLoss()
 		if(new_oxyloss < last_oxyloss)
-			var/heal_amount = (new_oxyloss - last_oxyloss) * 10
+			var/heal_amount = (new_oxyloss - last_oxyloss) * 5
 			owner.adjustOxyLoss(heal_amount, updating_health = FALSE)
 			new_oxyloss = owner.getOxyLoss()
 			needs_health_update = TRUE
@@ -354,7 +355,7 @@
 
 		var/new_cloneloss = owner.getCloneLoss()
 		if(new_cloneloss < last_cloneloss)
-			var/heal_amount = (new_cloneloss - last_cloneloss) * 10
+			var/heal_amount = (new_cloneloss - last_cloneloss) * 5
 			owner.adjustCloneLoss(heal_amount, updating_health = FALSE)
 			new_cloneloss = owner.getCloneLoss()
 			needs_health_update = TRUE
@@ -376,21 +377,22 @@
 /datum/status_effect/blooddrunk/on_remove()
 	. = ..()
 	tick()
-	owner.maxHealth *= 0.1
-	owner.bruteloss *= 0.1
-	owner.fireloss *= 0.1
+	owner.maxHealth *= 0.2
+	owner.bruteloss *= 0.2
+	owner.fireloss *= 0.2
 	if(iscarbon(owner))
 		var/mob/living/carbon/C = owner
 		for(var/X in C.bodyparts)
 			var/obj/item/bodypart/BP = X
-			BP.brute_dam *= 0.1
-			BP.burn_dam *= 0.1
-			BP.max_damage /= 10
-	owner.toxloss *= 0.1
-	owner.oxyloss *= 0.1
-	owner.cloneloss *= 0.1
-	owner.staminaloss *= 0.1
+			BP.brute_dam *= 0.2
+			BP.burn_dam *= 0.2
+			BP.max_damage /= 5
+	owner.toxloss *= 0.2
+	owner.oxyloss *= 0.2
+	owner.cloneloss *= 0.2
+	owner.staminaloss *= 0.2
 	owner.updatehealth()
+	owner.remove_movespeed_mod_immunities(type, list(/datum/movespeed_modifier/damage_slowdown, /datum/movespeed_modifier/damage_slowdown_flying, /datum/movespeed_modifier/monkey_health_speedmod))
 	owner.log_message("lost blood-drunk stun immunity", LOG_ATTACK)
 	if(islist(owner.stun_absorption) && owner.stun_absorption["blooddrunk"])
 		owner.stun_absorption -= "blooddrunk"
